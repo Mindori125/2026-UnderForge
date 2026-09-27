@@ -20,6 +20,8 @@ add_executable(Game2026
     main.cpp
     Engine/Core/Engine.cpp
     Game/Player.cpp
+    Engine/Input/Input.cpp
+    Engine/Object/GameObject.cpp
 )
 
 target_link_libraries(Game2026 PRIVATE SDL3::SDL3)

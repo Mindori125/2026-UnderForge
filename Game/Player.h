@@ -1,16 +1,20 @@
 #pragma once
 
-#include <SDL3/SDL.h>
+#include "../Engine/Object/GameObject.h"
 
-class Player
+class Player : public GameObject
 {
 public:
     Player(float x, float y, float width, float height);
 
-    void Update(float deltaTime);
-    void Render(SDL_Renderer* renderer);
+    void Update(float deltaTime) override;
+    void Render(SDL_Renderer* renderer) override;
+
+    void SetScreenSize(int width, int height);
 
 private:
-    SDL_FRect rect;
     float speed;
+
+    int screenWidth;
+    int screenHeight;
 };

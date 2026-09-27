@@ -57,6 +57,8 @@ bool Engine::Initialize(const char* title, int width, int height)
     50.0f,
     50.0f
     );
+    
+    player->SetScreenSize(width, height);
 
     running = true;
     lastTime = SDL_GetTicks();

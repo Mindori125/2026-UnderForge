@@ -1,39 +1,45 @@
 #include "Player.h"
+#include "../Engine/Input/Input.h"
 
 Player::Player(float x, float y, float width, float height)
-    : rect{x, y, width, height},
-      speed(300.0f)
+    : GameObject(x, y, width, height),
+      speed(300.0f),
+      screenWidth(800),
+      screenHeight(600) 
 {
+}
+
+void Player::SetScreenSize(int width, int height)
+{
+    screenWidth = width;
+    screenHeight = height;
 }
 
 void Player::Update(float deltaTime)
 {
-    const bool* keyboard = SDL_GetKeyboardState(nullptr);
-
-    if (keyboard[SDL_SCANCODE_W])
+    if (Input::IsKeyDown(Key::W))
         rect.y -= speed * deltaTime;
 
-    if (keyboard[SDL_SCANCODE_S])
+    if (Input::IsKeyDown(Key::S))
         rect.y += speed * deltaTime;
 
-    if (keyboard[SDL_SCANCODE_A])
+    if (Input::IsKeyDown(Key::A))
         rect.x -= speed * deltaTime;
 
-    if (keyboard[SDL_SCANCODE_D])
+    if (Input::IsKeyDown(Key::D))
         rect.x += speed * deltaTime;
 
-    // 현재 게임 화면 크기: 800 x 600
     if (rect.x < 0)
         rect.x = 0;
 
     if (rect.y < 0)
         rect.y = 0;
 
-    if (rect.x + rect.w > 800)
-        rect.x = 800 - rect.w;
+    if (rect.x + rect.w > screenWidth)
+        rect.x = screenWidth - rect.w;
 
-    if (rect.y + rect.h > 600)
-        rect.y = 600 - rect.h;
+    if (rect.y + rect.h > screenHeight)
+        rect.y = screenHeight - rect.h;
 }
 
 void Player::Render(SDL_Renderer* renderer)
