@@ -6,7 +6,9 @@ Player::Player(float x, float y, float width, float height)
     : GameObject(x, y, width, height),
       speed(300.0f),
       screenWidth(800),
-      screenHeight(600) 
+      screenHeight(600),
+      health(100),
+      maxHealth(100)
 {
 }
 
@@ -70,3 +72,23 @@ bool Player::LoadTexture(
 {
     return texture.Load(renderer, filePath);
 }   
+
+void Player::TakeDamage(int damage)
+{
+    health -= damage;
+
+    if (health < 0)
+    {
+        health = 0;
+    }
+}
+
+int Player::GetHealth() const
+{
+    return health;
+}
+
+int Player::GetMaxHealth() const
+{
+    return maxHealth;
+}

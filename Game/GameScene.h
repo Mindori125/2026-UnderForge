@@ -3,6 +3,7 @@
 #include "../Engine/Scene/Scene.h"
 #include "../Engine/Object/ObjectManager.h"
 #include "../Engine/Graphics/Camera.h"
+#include "../Engine/UI/HealthBar.h"
 
 class Player;
 class Enemy;
@@ -23,4 +24,5 @@ private:
     Player* player;
     Enemy* enemy;
     Camera* camera;
+    HealthBar* healthBar;
 };

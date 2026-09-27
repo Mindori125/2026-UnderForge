@@ -17,10 +17,17 @@ public:
     void SetScreenSize(int width, int height);
     bool LoadTexture(SDL_Renderer* renderer, const std::string& filePath);
 
+    void TakeDamage(int damage);
+
+    int GetHealth() const;
+    int GetMaxHealth() const;
+
 private:
     float speed;
 
     int screenWidth;
     int screenHeight;
     Texture texture;
+    int health;
+    int maxHealth;
 };

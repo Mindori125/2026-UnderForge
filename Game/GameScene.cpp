@@ -9,7 +9,8 @@ GameScene::GameScene()
     : objectManager(nullptr),
       player(nullptr),
       enemy(nullptr),
-      camera(nullptr)
+      camera(nullptr),
+      healthBar(nullptr)
 {
 }
 
@@ -22,6 +23,12 @@ GameScene::~GameScene()
         delete objectManager;
         objectManager = nullptr;
     }
+
+    if (healthBar != nullptr)
+    {
+        delete healthBar;
+        healthBar = nullptr;
+    }   
 
     // 따라서 Player와 Enemy는 여기서 delete 하지 않음
     player = nullptr;
@@ -47,6 +54,13 @@ bool GameScene::Initialize(SDL_Renderer* renderer)
         600.0f
     );
 
+    // 화면 중앙 하단 체력바
+    healthBar = new HealthBar(
+        250.0f,
+        550.0f,
+        300.0f,
+        20.0f
+    );
 
     // Player 생성
     player = new Player(
@@ -125,12 +139,31 @@ void GameScene::Update(float deltaTime)
 
 void GameScene::Render(SDL_Renderer* renderer)
 {
+    // =========================
+    // 게임 월드 렌더링
+    // =========================
+
     if (objectManager != nullptr &&
         camera != nullptr)
     {
         objectManager->Render(
             renderer,
             *camera
+        );
+    }
+
+
+    // =========================
+    // UI 렌더링
+    // =========================
+
+    if (healthBar != nullptr &&
+        player != nullptr)
+    {
+        healthBar->Render(
+            renderer,
+            player->GetHealth(),
+            player->GetMaxHealth()
         );
     }
 }

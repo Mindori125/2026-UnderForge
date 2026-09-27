@@ -47,7 +47,7 @@ add_executable(Game2026
     Game/Player.cpp
     Game/Enemy.cpp
     Game/GameScene.cpp
-    
+    Engine/UI/HealthBar.cpp
 )
 
 target_link_libraries(Game2026 PRIVATE
