@@ -15,20 +15,53 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(SDL3)
+FetchContent_Declare(
+    SDL3_image
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+    GIT_TAG release-3.2.4
+    GIT_SHALLOW TRUE
+)
+
+set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
+set(SDLIMAGE_WEBP OFF CACHE BOOL "" FORCE)
+set(SDLIMAGE_JXL OFF CACHE BOOL "" FORCE)
+set(SDLIMAGE_TIF OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(SDL3_image)
 
 add_executable(Game2026
     main.cpp
+
     Engine/Core/Engine.cpp
-    Game/Player.cpp
     Engine/Input/Input.cpp
+
     Engine/Object/GameObject.cpp
+    Engine/Object/ObjectManager.cpp
+
+    Engine/Physics/Collision.cpp
+    Engine/Graphics/Texture.cpp
+
+    Engine/Scene/SceneManager.cpp
+    Engine/Graphics/Camera.cpp  
+
+    Game/Player.cpp
+    Game/Enemy.cpp
+    Game/GameScene.cpp
+    
 )
 
-target_link_libraries(Game2026 PRIVATE SDL3::SDL3)
+target_link_libraries(Game2026 PRIVATE
+    SDL3::SDL3
+    SDL3_image::SDL3_image
+)
 
-# 웹 빌드일 경우 HTML 파일까지 생성
 if(EMSCRIPTEN)
     set_target_properties(Game2026 PROPERTIES
         SUFFIX ".html"
+    )
+
+    target_link_options(Game2026 PRIVATE
+        "--preload-file"
+        "${CMAKE_SOURCE_DIR}/Assets@/Assets"
     )
 endif()

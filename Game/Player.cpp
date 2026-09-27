@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../Engine/Input/Input.h"
+#include "../Engine/Graphics/Camera.h"
 
 Player::Player(float x, float y, float width, float height)
     : GameObject(x, y, width, height),
@@ -28,22 +29,44 @@ void Player::Update(float deltaTime)
 
     if (Input::IsKeyDown(Key::D))
         rect.x += speed * deltaTime;
-
-    if (rect.x < 0)
-        rect.x = 0;
-
-    if (rect.y < 0)
-        rect.y = 0;
-
-    if (rect.x + rect.w > screenWidth)
-        rect.x = screenWidth - rect.w;
-
-    if (rect.y + rect.h > screenHeight)
-        rect.y = screenHeight - rect.h;
 }
 
-void Player::Render(SDL_Renderer* renderer)
+void Player::Render(
+    SDL_Renderer* renderer,
+    const Camera& camera
+)
 {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_FRect screenRect =
+        camera.WorldToScreen(rect);
+
+    if (texture.IsLoaded())
+    {
+        texture.Render(
+            renderer,
+            screenRect
+        );
+    }
+    else
+    {
+        SDL_SetRenderDrawColor(
+            renderer,
+            255,
+            255,
+            255,
+            255
+        );
+
+        SDL_RenderFillRect(
+            renderer,
+            &screenRect
+        );
+    }
 }
+
+bool Player::LoadTexture(
+    SDL_Renderer* renderer,
+    const std::string& filePath
+)
+{
+    return texture.Load(renderer, filePath);
+}   

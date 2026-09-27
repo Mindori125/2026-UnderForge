@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include "../../Game/Player.h"
+#include "../Scene/SceneManager.h"
 
 class Engine
 {
@@ -28,5 +28,5 @@ private:
 
     bool running;
     Uint64 lastTime;
-    Player* player;
+    SceneManager* sceneManager;
 };

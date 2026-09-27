@@ -1,7 +1,11 @@
 #include "Engine.h"
+#include "../../Game/GameScene.h"
+
 #include <emscripten.h>
 
+
 static Engine* g_engine = nullptr;
+
 
 static void MainLoopCallback()
 {
@@ -11,6 +15,7 @@ static void MainLoopCallback()
     }
 }
 
+
 Engine::Engine()
     : window(nullptr),
       renderer(nullptr),
@@ -18,26 +23,30 @@ Engine::Engine()
       screenHeight(0),
       running(false),
       lastTime(0),
-      player(nullptr)
+      sceneManager(nullptr)
 {
 }
+
 
 Engine::~Engine()
 {
     Shutdown();
 }
 
+
 bool Engine::Initialize(const char* title, int width, int height)
 {
     screenWidth = width;
     screenHeight = height;
 
+    // SDL 초기화
     if (!SDL_Init(SDL_INIT_VIDEO))
     {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
 
+    // Window + Renderer 생성
     if (!SDL_CreateWindowAndRenderer(
             title,
             width,
@@ -46,25 +55,30 @@ bool Engine::Initialize(const char* title, int width, int height)
             &window,
             &renderer))
     {
-        SDL_Log("Window creation failed: %s", SDL_GetError());
+        SDL_Log(
+            "Window creation failed: %s",
+            SDL_GetError()
+        );
+
         SDL_Quit();
         return false;
     }
 
-    player = new Player(
-    width / 2.0f - 25.0f,
-    height / 2.0f - 25.0f,
-    50.0f,
-    50.0f
+    // SceneManager 생성
+    sceneManager = new SceneManager();
+
+    // 첫 번째 Scene으로 GameScene 실행
+    sceneManager->ChangeScene(
+        new GameScene(),
+        renderer
     );
-    
-    player->SetScreenSize(width, height);
 
     running = true;
     lastTime = SDL_GetTicks();
 
     return true;
 }
+
 
 void Engine::ProcessInput()
 {
@@ -79,26 +93,38 @@ void Engine::ProcessInput()
     }
 }
 
+
 void Engine::Update(float deltaTime)
 {
-    if (player != nullptr)
+    if (sceneManager != nullptr)
     {
-        player->Update(deltaTime);
+        sceneManager->Update(deltaTime);
     }
 }
 
+
 void Engine::Render()
 {
-    SDL_SetRenderDrawColor(renderer, 25, 25, 35, 255);
+    // 화면 초기화
+    SDL_SetRenderDrawColor(
+        renderer,
+        25,
+        25,
+        35,
+        255
+    );
+
     SDL_RenderClear(renderer);
 
-    if (player != nullptr)
+    // 현재 Scene 렌더링
+    if (sceneManager != nullptr)
     {
-        player->Render(renderer);
+        sceneManager->Render(renderer);
     }
 
     SDL_RenderPresent(renderer);
 }
+
 
 void Engine::GameLoop()
 {
@@ -111,7 +137,9 @@ void Engine::GameLoop()
     Uint64 currentTime = SDL_GetTicks();
 
     float deltaTime =
-        static_cast<float>(currentTime - lastTime) / 1000.0f;
+        static_cast<float>(
+            currentTime - lastTime
+        ) / 1000.0f;
 
     lastTime = currentTime;
 
@@ -119,6 +147,7 @@ void Engine::GameLoop()
     Update(deltaTime);
     Render();
 }
+
 
 void Engine::Run()
 {
@@ -131,20 +160,24 @@ void Engine::Run()
     );
 }
 
+
 void Engine::Shutdown()
 {
-    if (player != nullptr)
+    // Scene 정리
+    if (sceneManager != nullptr)
     {
-        delete player;
-        player = nullptr;
+        delete sceneManager;
+        sceneManager = nullptr;
     }
 
+    // Renderer 정리
     if (renderer != nullptr)
     {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
     }
 
+    // Window 정리
     if (window != nullptr)
     {
         SDL_DestroyWindow(window);

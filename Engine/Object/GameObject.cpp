@@ -14,3 +14,8 @@ float GameObject::GetY() const
 {
     return rect.y;
 }
+
+const SDL_FRect& GameObject::GetBounds() const
+{
+    return rect;
+}
