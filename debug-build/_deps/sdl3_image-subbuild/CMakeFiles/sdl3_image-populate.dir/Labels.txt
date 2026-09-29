@@ -1,0 +1,14 @@
+# Target labels
+ sdl3_image-populate
+# Source files and their labels
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/CMakeFiles/sdl3_image-populate
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/CMakeFiles/sdl3_image-populate.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/CMakeFiles/sdl3_image-populate-complete.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-build.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-configure.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-download.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-install.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-mkdir.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-patch.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-test.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-subbuild/sdl3_image-populate-prefix/src/sdl3_image-populate-stamp/sdl3_image-populate-update.rule

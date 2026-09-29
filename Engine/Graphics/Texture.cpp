@@ -2,15 +2,18 @@
 
 #include <SDL3_image/SDL_image.h>
 
+
 Texture::Texture()
     : texture(nullptr)
 {
 }
 
+
 Texture::~Texture()
 {
     Unload();
 }
+
 
 bool Texture::Load(
     SDL_Renderer* renderer,
@@ -19,7 +22,12 @@ bool Texture::Load(
 {
     Unload();
 
-    texture = IMG_LoadTexture(renderer, filePath.c_str());
+
+    texture = IMG_LoadTexture(
+        renderer,
+        filePath.c_str()
+    );
+
 
     if (texture == nullptr)
     {
@@ -32,16 +40,21 @@ bool Texture::Load(
         return false;
     }
 
+
     return true;
 }
+
 
 void Texture::Render(
     SDL_Renderer* renderer,
     const SDL_FRect& destination
-)
+) const
 {
     if (texture == nullptr)
+    {
         return;
+    }
+
 
     SDL_RenderTexture(
         renderer,
@@ -51,14 +64,111 @@ void Texture::Render(
     );
 }
 
+
+void Texture::Render(
+    SDL_Renderer* renderer,
+    const SDL_FRect& source,
+    const SDL_FRect& destination,
+    bool flipHorizontal
+) const
+{
+    if (texture == nullptr)
+    {
+        return;
+    }
+
+
+    SDL_FlipMode flip =
+        SDL_FLIP_NONE;
+
+
+    if (flipHorizontal)
+    {
+        flip =
+            SDL_FLIP_HORIZONTAL;
+    }
+
+
+    SDL_RenderTextureRotated(
+        renderer,
+        texture,
+        &source,
+        &destination,
+        0.0,
+        nullptr,
+        flip
+    );
+}
+
+
+void Texture::RenderTinted(
+    SDL_Renderer* renderer,
+    const SDL_FRect& source,
+    const SDL_FRect& destination,
+    Uint8 red,
+    Uint8 green,
+    Uint8 blue,
+    Uint8 alpha
+) const
+{
+    if (texture == nullptr)
+    {
+        return;
+    }
+
+
+    // 원하는 색상 적용
+    SDL_SetTextureColorMod(
+        texture,
+        red,
+        green,
+        blue
+    );
+
+
+    SDL_SetTextureAlphaMod(
+        texture,
+        alpha
+    );
+
+
+    SDL_RenderTexture(
+        renderer,
+        texture,
+        &source,
+        &destination
+    );
+
+
+    // 다음 렌더링에 영향을 주지 않도록
+    // 원래 색상으로 복구
+    SDL_SetTextureColorMod(
+        texture,
+        255,
+        255,
+        255
+    );
+
+
+    SDL_SetTextureAlphaMod(
+        texture,
+        255
+    );
+}
+
+
 void Texture::Unload()
 {
     if (texture != nullptr)
     {
-        SDL_DestroyTexture(texture);
+        SDL_DestroyTexture(
+            texture
+        );
+
         texture = nullptr;
     }
 }
+
 
 bool Texture::IsLoaded() const
 {

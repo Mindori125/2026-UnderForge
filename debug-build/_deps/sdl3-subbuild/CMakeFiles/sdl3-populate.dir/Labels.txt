@@ -1,0 +1,14 @@
+# Target labels
+ sdl3-populate
+# Source files and their labels
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate-complete.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-build.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-configure.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-download.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-install.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-mkdir.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-patch.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-test.rule
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-update.rule

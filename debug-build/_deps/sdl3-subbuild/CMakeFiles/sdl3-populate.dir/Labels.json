@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/CMakeFiles/sdl3-populate-complete.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-build.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-configure.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-download.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-install.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-mkdir.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-patch.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-test.rule"
+		},
+		{
+			"file" : "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-subbuild/sdl3-populate-prefix/src/sdl3-populate-stamp/sdl3-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sdl3-populate"
+		],
+		"name" : "sdl3-populate"
+	}
+}

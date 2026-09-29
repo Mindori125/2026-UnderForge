@@ -7,7 +7,8 @@ enum class Key
     W,
     A,
     S,
-    D
+    D,
+    Shift
 };
 
 class Input

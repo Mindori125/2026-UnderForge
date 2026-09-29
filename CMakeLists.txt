@@ -37,17 +37,19 @@ add_executable(Game2026
 
     Engine/Object/GameObject.cpp
     Engine/Object/ObjectManager.cpp
+    Engine/Graphics/Animation.cpp
 
     Engine/Physics/Collision.cpp
     Engine/Graphics/Texture.cpp
 
     Engine/Scene/SceneManager.cpp
-    Engine/Graphics/Camera.cpp  
+    Engine/Graphics/Camera.cpp
+    Game/TileMap.cpp  
 
     Game/Player.cpp
-    Game/Enemy.cpp
     Game/GameScene.cpp
     Engine/UI/HealthBar.cpp
+    Game/Stone.cpp
 )
 
 target_link_libraries(Game2026 PRIVATE

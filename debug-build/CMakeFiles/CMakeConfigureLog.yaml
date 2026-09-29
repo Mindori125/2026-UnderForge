@@ -1,0 +1,221 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake:228 (message)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      The target system is: Emscripten - 1 - x86
+      The host system is: Linux - 6.8.0-1064-azure - x86_64
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "debug-build/_deps/sdl3-src/cmake/sdlcpu.cmake:93 (try_compile)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:81 (SDL_DetectTargetCPUArchitectures)"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp"
+      binary: "/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "SDL_CPU_CHECK_ALL"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e56ca/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e56ca.dir/build.make CMakeFiles/cmTC_e56ca.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp'
+        Building C object CMakeFiles/cmTC_e56ca.dir/SDL_detect_arch.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc    -MD -MT CMakeFiles/cmTC_e56ca.dir/SDL_detect_arch.c.o -MF CMakeFiles/cmTC_e56ca.dir/SDL_detect_arch.c.o.d -o CMakeFiles/cmTC_e56ca.dir/SDL_detect_arch.c.o -c /workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch.c
+        Linking C static library libcmTC_e56ca.a
+        /usr/bin/cmake -P CMakeFiles/cmTC_e56ca.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e56ca.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emar qc libcmTC_e56ca.a CMakeFiles/cmTC_e56ca.dir/SDL_detect_arch.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emranlib libcmTC_e56ca.a
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCCompilerFlag.cmake:51 (cmake_check_compiler_flag)"
+      - "debug-build/_deps/sdl3-src/cmake/sdlcompilers.cmake:152 (check_c_compiler_flag)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:441 (SDL_AddCommonCompilerFlags)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_FCOLOR_DIAGNOSTICS"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9"
+      binary: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_FCOLOR_DIAGNOSTICS"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_c0d7c/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_c0d7c.dir/build.make CMakeFiles/cmTC_c0d7c.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9'
+        Building C object CMakeFiles/cmTC_c0d7c.dir/src.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc -DCOMPILER_SUPPORTS_FCOLOR_DIAGNOSTICS  -D_GNU_SOURCE=1   -fcolor-diagnostics -MD -MT CMakeFiles/cmTC_c0d7c.dir/src.c.o -MF CMakeFiles/cmTC_c0d7c.dir/src.c.o.d -o CMakeFiles/cmTC_c0d7c.dir/src.c.o -c /workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9/src.c
+        Linking C executable cmTC_c0d7c.js
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c0d7c.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 CMakeFiles/cmTC_c0d7c.dir/src.c.o -o cmTC_c0d7c.js 
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-4obyU9'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:1095 (check_symbol_exists)"
+    checks:
+      - "Looking for fdatasync"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E"
+      binary: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "HAVE_FDATASYNC"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_11b32/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_11b32.dir/build.make CMakeFiles/cmTC_11b32.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E'
+        Building C object CMakeFiles/cmTC_11b32.dir/CheckSymbolExists.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 -MD -MT CMakeFiles/cmTC_11b32.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_11b32.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_11b32.dir/CheckSymbolExists.c.o -c /workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E/CheckSymbolExists.c
+        Linking C executable cmTC_11b32.js
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_11b32.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 CMakeFiles/cmTC_11b32.dir/CheckSymbolExists.c.o -o cmTC_11b32.js 
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-1Ufk7E'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:1096 (check_symbol_exists)"
+    checks:
+      - "Looking for gethostname"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr"
+      binary: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "HAVE_GETHOSTNAME"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_8511d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_8511d.dir/build.make CMakeFiles/cmTC_8511d.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr'
+        Building C object CMakeFiles/cmTC_8511d.dir/CheckSymbolExists.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 -MD -MT CMakeFiles/cmTC_8511d.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_8511d.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_8511d.dir/CheckSymbolExists.c.o -c /workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr/CheckSymbolExists.c
+        Linking C executable cmTC_8511d.js
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8511d.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 CMakeFiles/cmTC_8511d.dir/CheckSymbolExists.c.o -o cmTC_8511d.js 
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-8RJhgr'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:1099 (check_symbol_exists)"
+    checks:
+      - "Looking for sigtimedwait"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC"
+      binary: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "HAVE_SIGTIMEDWAIT"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_ed638/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_ed638.dir/build.make CMakeFiles/cmTC_ed638.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC'
+        Building C object CMakeFiles/cmTC_ed638.dir/CheckSymbolExists.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 -MD -MT CMakeFiles/cmTC_ed638.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_ed638.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_ed638.dir/CheckSymbolExists.c.o -c /workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC/CheckSymbolExists.c
+        Linking C executable cmTC_ed638.js
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ed638.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 CMakeFiles/cmTC_ed638.dir/CheckSymbolExists.c.o -o cmTC_ed638.js 
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-DId6HC'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "debug-build/_deps/sdl3-src/CMakeLists.txt:2962 (check_c_source_compiles)"
+    checks:
+      - "Performing Test HAVE_POSIX_SPAWN"
+    directories:
+      source: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ"
+      binary: "/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/emscan-deps"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cmake/Modules;/workspaces/2026-Game-Project/debug-build/_deps/sdl3-src/cmake"
+    buildResult:
+      variable: "HAVE_POSIX_SPAWN"
+      cached: true
+      stdout: |
+        Change Dir: '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_c0c8f/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_c0c8f.dir/build.make CMakeFiles/cmTC_c0c8f.dir/build
+        gmake[1]: Entering directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ'
+        Building C object CMakeFiles/cmTC_c0c8f.dir/src.c.o
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc -DHAVE_POSIX_SPAWN  -D_GNU_SOURCE=1 -MD -MT CMakeFiles/cmTC_c0c8f.dir/src.c.o -MF CMakeFiles/cmTC_c0c8f.dir/src.c.o.d -o CMakeFiles/cmTC_c0c8f.dir/src.c.o -c /workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ/src.c
+        Linking C executable cmTC_c0c8f.js
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c0c8f.dir/link.txt --verbose=1
+        /workspaces/2026-Game-Project/emsdk/upstream/emscripten/emcc   -D_GNU_SOURCE=1 CMakeFiles/cmTC_c0c8f.dir/src.c.o -o cmTC_c0c8f.js 
+        wasm-ld: error: CMakeFiles/cmTC_c0c8f.dir/src.c.o: undefined symbol: posix_spawnp
+        emcc: error: '/workspaces/2026-Game-Project/emsdk/upstream/bin/wasm-ld -o cmTC_c0c8f.wasm /tmp/tmpni39txsflibemscripten_js_symbols.so -Bstatic --strip-debug --export=emscripten_stack_get_end --export=emscripten_stack_get_free --export=emscripten_stack_get_base --export=emscripten_stack_get_current --export=emscripten_stack_init --export=_emscripten_stack_alloc --export=setThrew --export=__wasm_call_ctors --export=_emscripten_stack_restore --export-if-defined=__start_em_asm --export-if-defined=__stop_em_asm --export-if-defined=__start_em_lib_deps --export-if-defined=__stop_em_lib_deps --export-if-defined=__start_em_js --export-if-defined=__stop_em_js --export-if-defined=main --export-if-defined=__main_argc_argv --export-if-defined=fflush --export-table -z stack-size=65536 --no-growable-memory --initial-heap=16777216 --no-entry --stack-first --table-base=1 CMakeFiles/cmTC_c0c8f.dir/src.c.o -L/workspaces/2026-Game-Project/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten -L/workspaces/2026-Game-Project/emsdk/upstream/emscripten/src/lib -lGL-getprocaddr -lal -lhtml5 -lstubs-debug -lnoexit -lc-debug -ldlmalloc-debug -lclang_rt.builtins -lsockets -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr' failed (returned 1)
+        gmake[1]: *** [CMakeFiles/cmTC_c0c8f.dir/build.make:100: cmTC_c0c8f.js] Error 1
+        gmake[1]: Leaving directory '/workspaces/2026-Game-Project/debug-build/CMakeFiles/CMakeScratch/TryCompile-d81WWQ'
+        gmake: *** [Makefile:127: cmTC_c0c8f/fast] Error 2
+        
+      exitCode: 2
+...

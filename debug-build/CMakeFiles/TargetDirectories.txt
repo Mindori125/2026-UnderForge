@@ -1,0 +1,11 @@
+/workspaces/2026-Game-Project/debug-build/CMakeFiles/Game2026.dir
+/workspaces/2026-Game-Project/debug-build/CMakeFiles/edit_cache.dir
+/workspaces/2026-Game-Project/debug-build/CMakeFiles/rebuild_cache.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/SDL3-static.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/SDL3_test.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/SDL_uclibc.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/edit_cache.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3-build/CMakeFiles/rebuild_cache.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-build/CMakeFiles/SDL3_image-static.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-build/CMakeFiles/edit_cache.dir
+/workspaces/2026-Game-Project/debug-build/_deps/sdl3_image-build/CMakeFiles/rebuild_cache.dir
