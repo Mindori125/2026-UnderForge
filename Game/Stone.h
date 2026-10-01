@@ -12,11 +12,11 @@ class Stone
 public:
     Stone(
         float x,
-        float y
+        float y,
+        int variant
     );
 
 
-    // 일반 돌 렌더링
     void Render(
         SDL_Renderer* renderer,
         const Camera& camera,
@@ -24,8 +24,6 @@ public:
     ) const;
 
 
-    // 마우스가 올라왔을 때
-    // 빨간색 테두리 효과
     void RenderHighlight(
         SDL_Renderer* renderer,
         const Camera& camera,
@@ -39,18 +37,17 @@ public:
     SDL_FRect GetCollider() const;
 
 
-    // 월드 좌표의 한 점이
-    // 돌 위에 있는지 검사
     bool ContainsPoint(
         float worldX,
         float worldY
     ) const;
 
 
-private:
-    SDL_FRect GetSourceRect() const;
+    int GetVariant() const;
 
 
 private:
     SDL_FRect bounds;
+
+    int variant;
 };

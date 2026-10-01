@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <array>
 #include <vector>
 #include <random>
 
@@ -21,6 +22,7 @@ class GameScene : public Scene
 {
 public:
     GameScene();
+
     ~GameScene() override;
 
 
@@ -39,15 +41,55 @@ public:
     ) override;
 
 
-    // 나중에 채굴 시스템에서 사용
     void DestroyStone(
         Stone* stone
     );
 
 
 private:
+
     // =========================
-    // Player
+    // Start Screen
+    // =========================
+
+    void UpdateStartScreen(
+        float deltaTime
+    );
+
+
+    void RenderStartScreen(
+        SDL_Renderer* renderer
+    );
+
+
+    void RenderStartText(
+        SDL_Renderer* renderer
+    );
+
+
+    void DrawPixelText(
+        SDL_Renderer* renderer,
+        const char* text,
+        float centerX,
+        float y,
+        float pixelSize
+    );
+
+
+    void DrawPixelCharacter(
+        SDL_Renderer* renderer,
+        char character,
+        float x,
+        float y,
+        float pixelSize
+    );
+
+
+    bool IsAnyKeyPressed() const;
+
+
+    // =========================
+    // Game
     // =========================
 
     void MovePlayerWithCollisions(
@@ -61,16 +103,8 @@ private:
     ) const;
 
 
-    // =========================
-    // Camera
-    // =========================
-
     void UpdateCamera();
 
-
-    // =========================
-    // Stone
-    // =========================
 
     void SpawnInitialStones();
 
@@ -89,10 +123,6 @@ private:
     ) const;
 
 
-    // =========================
-    // Mouse / Cursor
-    // =========================
-
     void UpdateHoveredStone();
 
 
@@ -101,16 +131,30 @@ private:
     );
 
 
-    // =========================
-    // UI
-    // =========================
-
     void RenderStaminaBar(
         SDL_Renderer* renderer
     );
 
 
 private:
+
+    // =========================
+    // Start Screen
+    // =========================
+
+    bool gameStarted;
+
+    float startScreenTime;
+
+    Texture startBackgroundTexture;
+
+    Texture startIconTexture;
+
+
+    // =========================
+    // Game Objects
+    // =========================
+
     ObjectManager* objectManager;
 
     Player* player;
@@ -126,18 +170,28 @@ private:
     // Stone
     // =========================
 
-    Texture stoneTexture;
-
-    std::vector<Stone*> stones;
-
-    std::mt19937 randomEngine;
-
     static constexpr int MAX_STONES =
         15;
 
 
+    static constexpr int STONE_VARIANT_COUNT =
+        5;
+
+
+    std::array<
+        Texture,
+        STONE_VARIANT_COUNT
+    > stoneTextures;
+
+
+    std::vector<Stone*> stones;
+
+
+    std::mt19937 randomEngine;
+
+
     // =========================
-    // Mouse
+    // Cursor
     // =========================
 
     Texture defaultCursorTexture;
@@ -149,5 +203,6 @@ private:
 
 
     float mouseX;
+
     float mouseY;
 };

@@ -116,7 +116,7 @@ bool Engine::Initialize(
     // 화면 비율이 달라도
     // 게임 화면이 찌그러지지 않는다.
     // =========================
-
+/*
     if (!SDL_SetRenderLogicalPresentation(
             renderer,
             width,
@@ -132,14 +132,13 @@ bool Engine::Initialize(
         return false;
     }
 
-
+*/
     // =========================
     // SceneManager
     // =========================
 
     sceneManager =
         new SceneManager();
-
 
     sceneManager->ChangeScene(
         new GameScene(),
@@ -197,10 +196,6 @@ void Engine::Update(
 
 void Engine::Render()
 {
-    // =========================
-    // 배경
-    // =========================
-
     SDL_SetRenderDrawColor(
         renderer,
         25,
@@ -209,15 +204,9 @@ void Engine::Render()
         255
     );
 
-
     SDL_RenderClear(
         renderer
     );
-
-
-    // =========================
-    // Scene
-    // =========================
 
     if (sceneManager != nullptr)
     {
@@ -225,11 +214,6 @@ void Engine::Render()
             renderer
         );
     }
-
-
-    // =========================
-    // 화면 출력
-    // =========================
 
     SDL_RenderPresent(
         renderer

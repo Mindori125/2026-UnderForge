@@ -7,24 +7,14 @@
 #include "../Engine/Physics/Collision.h"
 
 #include <algorithm>
-
-
-namespace
-{
-    constexpr float SCREEN_WIDTH =
-        800.0f;
-
-    constexpr float SCREEN_HEIGHT =
-        600.0f;
-
-
-    constexpr float STONE_SPAWN_MARGIN =
-        80.0f;
-}
+#include <cmath>
+#include <cstring>
 
 
 GameScene::GameScene()
-    : objectManager(nullptr),
+    : gameStarted(false),
+      startScreenTime(0.0f),
+      objectManager(nullptr),
       player(nullptr),
       camera(nullptr),
       healthBar(nullptr),
@@ -38,16 +28,8 @@ GameScene::GameScene()
 
 GameScene::~GameScene()
 {
-    // =========================
-    // 기본 마우스 다시 표시
-    // =========================
-
     SDL_ShowCursor();
 
-
-    // =========================
-    // Stones
-    // =========================
 
     for (Stone* stone : stones)
     {
@@ -57,58 +39,26 @@ GameScene::~GameScene()
 
     stones.clear();
 
-    hoveredStone = nullptr;
+
+    delete objectManager;
+    objectManager = nullptr;
 
 
-    // =========================
-    // ObjectManager
-    // =========================
+    delete healthBar;
+    healthBar = nullptr;
 
-    if (objectManager != nullptr)
-    {
-        delete objectManager;
 
-        objectManager = nullptr;
-    }
+    delete camera;
+    camera = nullptr;
+
+
+    delete tileMap;
+    tileMap = nullptr;
 
 
     player = nullptr;
 
-
-    // =========================
-    // HealthBar
-    // =========================
-
-    if (healthBar != nullptr)
-    {
-        delete healthBar;
-
-        healthBar = nullptr;
-    }
-
-
-    // =========================
-    // Camera
-    // =========================
-
-    if (camera != nullptr)
-    {
-        delete camera;
-
-        camera = nullptr;
-    }
-
-
-    // =========================
-    // TileMap
-    // =========================
-
-    if (tileMap != nullptr)
-    {
-        delete tileMap;
-
-        tileMap = nullptr;
-    }
+    hoveredStone = nullptr;
 }
 
 
@@ -116,15 +66,11 @@ bool GameScene::Initialize(
     SDL_Renderer* renderer
 )
 {
-    // =========================
-    // 브라우저 / OS 기본 커서 숨기기
-    // =========================
-
     SDL_HideCursor();
 
 
     // =========================
-    // Random
+    // 랜덤 시드
     // =========================
 
     randomEngine.seed(
@@ -135,7 +81,37 @@ bool GameScene::Initialize(
 
 
     // =========================
-    // ObjectManager
+    // Start Screen
+    // =========================
+
+    if (!startBackgroundTexture.Load(
+            renderer,
+            "Assets/Textures/UI/underforge_bg.png"
+        ))
+    {
+        SDL_Log(
+            "Failed to load underforge_bg.png"
+        );
+
+        return false;
+    }
+
+
+    if (!startIconTexture.Load(
+            renderer,
+            "Assets/Textures/UI/underforge_icon.png"
+        ))
+    {
+        SDL_Log(
+            "Failed to load underforge_icon.png"
+        );
+
+        return false;
+    }
+
+
+    // =========================
+    // Object Manager
     // =========================
 
     objectManager =
@@ -148,13 +124,13 @@ bool GameScene::Initialize(
 
     camera =
         new Camera(
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT
+            800.0f,
+            600.0f
         );
 
 
     // =========================
-    // HealthBar
+    // Health Bar
     // =========================
 
     healthBar =
@@ -177,28 +153,48 @@ bool GameScene::Initialize(
     if (!tileMap->Load(renderer))
     {
         SDL_Log(
-            "Failed to load tile map"
+            "Failed to load TileMap."
         );
 
         return false;
     }
 
-
     // =========================
-    // Stone Texture
+    // Stone Textures
     // =========================
 
-    if (!stoneTexture.Load(
+    const char* stonePaths[
+        STONE_VARIANT_COUNT
+    ] =
+    {
+        "Assets/Textures/World/stone_1.png",
+        "Assets/Textures/World/stone_2.png",
+        "Assets/Textures/World/stone_3.png",
+        "Assets/Textures/World/stone_4.png",
+        "Assets/Textures/World/stone_5.png"
+    };
+
+
+for (
+    int i = 0;
+    i < STONE_VARIANT_COUNT;
+    ++i
+)
+{
+    if (!stoneTextures[i].Load(
             renderer,
-            "Assets/Textures/World/stone.png"
+            stonePaths[i]
         ))
     {
         SDL_Log(
-            "Failed to load stone.png"
+            "Failed to load stone texture: %s",
+            stonePaths[i]
         );
 
         return false;
     }
+}
+
 
 
     // =========================
@@ -211,7 +207,7 @@ bool GameScene::Initialize(
         ))
     {
         SDL_Log(
-            "Failed to load cursor_default.png"
+            "Failed to load default cursor."
         );
 
         return false;
@@ -224,7 +220,7 @@ bool GameScene::Initialize(
         ))
     {
         SDL_Log(
-            "Failed to load cursor_pickaxe.png"
+            "Failed to load pickaxe cursor."
         );
 
         return false;
@@ -244,11 +240,17 @@ bool GameScene::Initialize(
         );
 
 
-    if (!player->LoadTextures(renderer))
+    if (!player->LoadTextures(
+            renderer
+        ))
     {
         SDL_Log(
-            "Failed to load player textures"
+            "Failed to load Player textures."
         );
+
+        delete player;
+
+        player = nullptr;
 
         return false;
     }
@@ -260,14 +262,14 @@ bool GameScene::Initialize(
 
 
     // =========================
-    // Camera 초기화
+    // Camera
     // =========================
 
     UpdateCamera();
 
 
     // =========================
-    // 돌 15개 생성
+    // Stones
     // =========================
 
     SpawnInitialStones();
@@ -276,6 +278,613 @@ bool GameScene::Initialize(
     return true;
 }
 
+
+// ============================================================
+// START SCREEN
+// ============================================================
+
+bool GameScene::IsAnyKeyPressed() const
+{
+    int keyCount = 0;
+
+
+    const bool* keyboard =
+        SDL_GetKeyboardState(
+            &keyCount
+        );
+
+
+    for (
+        int i = 0;
+        i < keyCount;
+        ++i
+    )
+    {
+        if (keyboard[i])
+        {
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+void GameScene::UpdateStartScreen(
+    float deltaTime
+)
+{
+    startScreenTime +=
+        deltaTime;
+
+
+    // 아무 키나 누르면 게임 시작
+    if (IsAnyKeyPressed())
+    {
+        gameStarted =
+            true;
+    }
+}
+
+
+void GameScene::RenderStartScreen(
+    SDL_Renderer* renderer
+)
+{
+    // ========================================================
+    // 배경
+    //
+    // 원본:
+    // 1672 x 941
+    //
+    // 게임:
+    // 800 x 600
+    //
+    // 원본을 억지로 4:3으로 찌그러뜨리지 않고
+    // 가운데 부분을 잘라서 800x600에 맞춤
+    // ========================================================
+
+    const float backgroundSourceHeight =
+        941.0f;
+
+
+    const float backgroundSourceWidth =
+        backgroundSourceHeight *
+        (800.0f / 600.0f);
+
+
+    const float backgroundSourceX =
+        (1672.0f -
+         backgroundSourceWidth)
+        / 2.0f;
+
+
+    SDL_FRect backgroundSource =
+    {
+        backgroundSourceX,
+        0.0f,
+        backgroundSourceWidth,
+        backgroundSourceHeight
+    };
+
+
+    SDL_FRect backgroundDestination =
+    {
+        0.0f,
+        0.0f,
+        800.0f,
+        600.0f
+    };
+
+
+    startBackgroundTexture.Render(
+        renderer,
+        backgroundSource,
+        backgroundDestination
+    );
+
+
+    // ========================================================
+    // UNDERFORGE ICON
+    // ========================================================
+
+    // 천천히 위아래로 움직임
+    float floatingOffset =
+        std::sin(
+            startScreenTime * 1.8f
+        ) *
+        5.0f;
+
+
+    // 아이콘 크기
+    const float iconWidth =
+        500.0f;
+
+
+    // 원본 비율 유지
+    const float iconHeight =
+        iconWidth *
+        (907.0f / 1734.0f);
+
+
+    SDL_FRect iconRect;
+
+
+    iconRect.w =
+        iconWidth;
+
+
+    iconRect.h =
+        iconHeight;
+
+
+    iconRect.x =
+        (800.0f -
+         iconRect.w)
+        / 2.0f;
+
+
+    // 화면 중앙보다 약간 위
+    iconRect.y =
+        95.0f +
+        floatingOffset;
+
+
+    startIconTexture.Render(
+        renderer,
+        iconRect
+    );
+
+
+    // ========================================================
+    // PRESS ANY BUTTON TO START
+    // ========================================================
+
+    RenderStartText(
+        renderer
+    );
+}
+
+
+void GameScene::RenderStartText(
+    SDL_Renderer* renderer
+)
+{
+    // ========================================================
+    // 글씨 크기가
+    // 커졌다 → 작아졌다 → 커졌다 반복
+    // ========================================================
+
+    float pulse =
+        (
+            std::sin(
+                startScreenTime * 3.0f
+            )
+            + 1.0f
+        )
+        * 0.5f;
+
+
+    float pixelSize =
+        3.0f +
+        pulse * 0.45f;
+
+
+    SDL_SetRenderDrawBlendMode(
+        renderer,
+        SDL_BLENDMODE_BLEND
+    );
+
+
+    // 약간의 그림자
+    SDL_SetRenderDrawColor(
+        renderer,
+        0,
+        0,
+        0,
+        170
+    );
+
+
+    DrawPixelText(
+        renderer,
+        "PRESS ANY BUTTON TO START",
+        402.0f,
+        503.0f,
+        pixelSize
+    );
+
+
+    // 흰색 픽셀 글씨
+    SDL_SetRenderDrawColor(
+        renderer,
+        255,
+        255,
+        255,
+        255
+    );
+
+
+    DrawPixelText(
+        renderer,
+        "PRESS ANY BUTTON TO START",
+        400.0f,
+        500.0f,
+        pixelSize
+    );
+
+
+    SDL_SetRenderDrawBlendMode(
+        renderer,
+        SDL_BLENDMODE_NONE
+    );
+}
+
+
+void GameScene::DrawPixelText(
+    SDL_Renderer* renderer,
+    const char* text,
+    float centerX,
+    float y,
+    float pixelSize
+)
+{
+    int length =
+        static_cast<int>(
+            std::strlen(text)
+        );
+
+
+    // 글자 하나:
+    // 5픽셀 너비 + 1픽셀 간격
+    float characterWidth =
+        6.0f *
+        pixelSize;
+
+
+    float totalWidth =
+        static_cast<float>(
+            length
+        ) *
+        characterWidth;
+
+
+    // 마지막 글자의 뒤쪽 간격 제거
+    totalWidth -=
+        pixelSize;
+
+
+    float startX =
+        centerX -
+        totalWidth / 2.0f;
+
+
+    float currentX =
+        startX;
+
+
+    for (
+        int i = 0;
+        i < length;
+        ++i
+    )
+    {
+        DrawPixelCharacter(
+            renderer,
+            text[i],
+            currentX,
+            y,
+            pixelSize
+        );
+
+
+        currentX +=
+            characterWidth;
+    }
+}
+
+
+void GameScene::DrawPixelCharacter(
+    SDL_Renderer* renderer,
+    char character,
+    float x,
+    float y,
+    float pixelSize
+)
+{
+    // 5 x 7 픽셀 폰트
+
+    const char* pattern[7] =
+    {
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000"
+    };
+
+
+    switch (character)
+    {
+        case 'A':
+        {
+            static const char* p[7] =
+            {
+                "01110",
+                "10001",
+                "10001",
+                "11111",
+                "10001",
+                "10001",
+                "10001"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'B':
+        {
+            static const char* p[7] =
+            {
+                "11110",
+                "10001",
+                "10001",
+                "11110",
+                "10001",
+                "10001",
+                "11110"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'E':
+        {
+            static const char* p[7] =
+            {
+                "11111",
+                "10000",
+                "10000",
+                "11110",
+                "10000",
+                "10000",
+                "11111"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'N':
+        {
+            static const char* p[7] =
+            {
+                "10001",
+                "11001",
+                "11001",
+                "10101",
+                "10011",
+                "10011",
+                "10001"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'O':
+        {
+            static const char* p[7] =
+            {
+                "01110",
+                "10001",
+                "10001",
+                "10001",
+                "10001",
+                "10001",
+                "01110"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'P':
+        {
+            static const char* p[7] =
+            {
+                "11110",
+                "10001",
+                "10001",
+                "11110",
+                "10000",
+                "10000",
+                "10000"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'R':
+        {
+            static const char* p[7] =
+            {
+                "11110",
+                "10001",
+                "10001",
+                "11110",
+                "10100",
+                "10010",
+                "10001"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'S':
+        {
+            static const char* p[7] =
+            {
+                "01111",
+                "10000",
+                "10000",
+                "01110",
+                "00001",
+                "00001",
+                "11110"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'T':
+        {
+            static const char* p[7] =
+            {
+                "11111",
+                "00100",
+                "00100",
+                "00100",
+                "00100",
+                "00100",
+                "00100"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'U':
+        {
+            static const char* p[7] =
+            {
+                "10001",
+                "10001",
+                "10001",
+                "10001",
+                "10001",
+                "10001",
+                "01110"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case 'Y':
+        {
+            static const char* p[7] =
+            {
+                "10001",
+                "10001",
+                "01010",
+                "00100",
+                "00100",
+                "00100",
+                "00100"
+            };
+
+            for (int i = 0; i < 7; ++i)
+                pattern[i] = p[i];
+
+            break;
+        }
+
+
+        case ' ':
+        {
+            return;
+        }
+    }
+
+
+    for (
+        int row = 0;
+        row < 7;
+        ++row
+    )
+    {
+        for (
+            int column = 0;
+            column < 5;
+            ++column
+        )
+        {
+            if (
+                pattern[row][column] ==
+                '1'
+            )
+            {
+                SDL_FRect pixel =
+                {
+                    x +
+                    static_cast<float>(
+                        column
+                    ) *
+                    pixelSize,
+
+                    y +
+                    static_cast<float>(
+                        row
+                    ) *
+                    pixelSize,
+
+                    pixelSize,
+                    pixelSize
+                };
+
+
+                SDL_RenderFillRect(
+                    renderer,
+                    &pixel
+                );
+            }
+        }
+    }
+}
+
+
+// ============================================================
+// GAME
+// ============================================================
 
 void GameScene::MovePlayerWithCollisions(
     float deltaX,
@@ -292,35 +901,31 @@ void GameScene::MovePlayerWithCollisions(
 
 
     // =========================
-    // X
+    // X축
     // =========================
 
     if (deltaX != 0.0f)
     {
-        SDL_FRect nextHitbox =
+        SDL_FRect currentHitbox =
             player->GetHitbox();
+
+
+        SDL_FRect nextHitbox =
+            currentHitbox;
 
 
         nextHitbox.x +=
             deltaX;
 
 
-        bool blocked =
-            tileMap->IsBlocked(
+        if (
+            !tileMap->IsBlocked(
                 nextHitbox
-            );
-
-
-        if (!blocked)
-        {
-            blocked =
-                IsPlayerBlockedByStone(
-                    nextHitbox
-                );
-        }
-
-
-        if (!blocked)
+            ) &&
+            !IsPlayerBlockedByStone(
+                nextHitbox
+            )
+        )
         {
             player->Move(
                 deltaX,
@@ -331,35 +936,31 @@ void GameScene::MovePlayerWithCollisions(
 
 
     // =========================
-    // Y
+    // Y축
     // =========================
 
     if (deltaY != 0.0f)
     {
-        SDL_FRect nextHitbox =
+        SDL_FRect currentHitbox =
             player->GetHitbox();
+
+
+        SDL_FRect nextHitbox =
+            currentHitbox;
 
 
         nextHitbox.y +=
             deltaY;
 
 
-        bool blocked =
-            tileMap->IsBlocked(
+        if (
+            !tileMap->IsBlocked(
                 nextHitbox
-            );
-
-
-        if (!blocked)
-        {
-            blocked =
-                IsPlayerBlockedByStone(
-                    nextHitbox
-                );
-        }
-
-
-        if (!blocked)
+            ) &&
+            !IsPlayerBlockedByStone(
+                nextHitbox
+            )
+        )
         {
             player->Move(
                 0.0f,
@@ -374,7 +975,7 @@ bool GameScene::IsPlayerBlockedByStone(
     const SDL_FRect& playerHitbox
 ) const
 {
-    for (Stone* stone : stones)
+    for (const Stone* stone : stones)
     {
         if (stone == nullptr)
         {
@@ -382,10 +983,14 @@ bool GameScene::IsPlayerBlockedByStone(
         }
 
 
+        SDL_FRect stoneCollider =
+            stone->GetCollider();
+
+
         if (
             Collision::CheckAABB(
                 playerHitbox,
-                stone->GetCollider()
+                stoneCollider
             )
         )
         {
@@ -410,78 +1015,89 @@ void GameScene::UpdateCamera()
     }
 
 
-    camera->Follow(
-        player->GetX() +
-            player->GetBounds().w /
-            2.0f,
+    SDL_FRect playerBounds =
+        player->GetBounds();
 
-        player->GetY() +
-            player->GetBounds().h /
-            2.0f
+
+    float targetX =
+        playerBounds.x +
+        playerBounds.w / 2.0f;
+
+
+    float targetY =
+        playerBounds.y +
+        playerBounds.h / 2.0f;
+
+
+    camera->Follow(
+        targetX,
+        targetY
     );
 
 
-    float clampedX =
+    float cameraX =
         camera->GetX();
 
 
-    float clampedY =
+    float cameraY =
         camera->GetY();
 
 
-    float maxX =
+    const float screenWidth =
+        800.0f;
+
+
+    const float screenHeight =
+        600.0f;
+
+
+    float maxCameraX =
         static_cast<float>(
             tileMap->GetWorldWidth()
         ) -
-        SCREEN_WIDTH;
+        screenWidth;
 
 
-    float maxY =
+    float maxCameraY =
         static_cast<float>(
             tileMap->GetWorldHeight()
         ) -
-        SCREEN_HEIGHT;
+        screenHeight;
 
 
-    if (maxX < 0.0f)
+    if (maxCameraX < 0.0f)
     {
-        maxX = 0.0f;
+        maxCameraX =
+            0.0f;
     }
 
 
-    if (maxY < 0.0f)
+    if (maxCameraY < 0.0f)
     {
-        maxY = 0.0f;
+        maxCameraY =
+            0.0f;
     }
 
 
-    if (clampedX < 0.0f)
-    {
-        clampedX = 0.0f;
-    }
+    cameraX =
+        std::clamp(
+            cameraX,
+            0.0f,
+            maxCameraX
+        );
 
 
-    if (clampedY < 0.0f)
-    {
-        clampedY = 0.0f;
-    }
-
-
-    if (clampedX > maxX)
-    {
-        clampedX = maxX;
-    }
-
-
-    if (clampedY > maxY)
-    {
-        clampedY = maxY;
-    }
+    cameraY =
+        std::clamp(
+            cameraY,
+            0.0f,
+            maxCameraY
+        );
 
 
     camera->SetPosition(
-        clampedX,
-        clampedY
+        cameraX,
+        cameraY
     );
 }
 
@@ -497,10 +1113,15 @@ void GameScene::SpawnInitialStones()
     stones.clear();
 
 
-    int attempts = 0;
+    hoveredStone =
+        nullptr;
 
 
-    constexpr int MAX_ATTEMPTS =
+    int attempts =
+        0;
+
+
+    const int maxAttempts =
         5000;
 
 
@@ -508,22 +1129,13 @@ void GameScene::SpawnInitialStones()
         static_cast<int>(
             stones.size()
         ) < MAX_STONES &&
-        attempts < MAX_ATTEMPTS
+        attempts < maxAttempts
     )
     {
-        if (!SpawnStoneOutsideView())
-        {
-            attempts++;
-        }
+        SpawnStoneOutsideView();
+
+        ++attempts;
     }
-
-
-    SDL_Log(
-        "Spawned stones: %d",
-        static_cast<int>(
-            stones.size()
-        )
-    );
 }
 
 
@@ -531,123 +1143,150 @@ bool GameScene::SpawnStoneOutsideView()
 {
     if (
         tileMap == nullptr ||
-        camera == nullptr ||
-        player == nullptr
+        player == nullptr ||
+        camera == nullptr
     )
     {
         return false;
     }
 
 
-    constexpr float STONE_WIDTH =
+    const float stoneWidth =
         64.0f;
 
 
-    constexpr float STONE_HEIGHT =
-        44.0f;
+    const float stoneHeight =
+        64.0f;
 
 
-    float maxX =
-        static_cast<float>(
-            tileMap->GetWorldWidth()
+    const int margin =
+        30;
+
+
+    int maxX =
+        tileMap->GetWorldWidth() -
+        static_cast<int>(
+            stoneWidth
         ) -
-        STONE_WIDTH;
+        margin;
 
 
-    float maxY =
-        static_cast<float>(
-            tileMap->GetWorldHeight()
+    int maxY =
+        tileMap->GetWorldHeight() -
+        static_cast<int>(
+            stoneHeight
         ) -
-        STONE_HEIGHT;
+        margin;
 
 
     if (
-        maxX <= 0.0f ||
-        maxY <= 0.0f
+        maxX <= margin ||
+        maxY <= margin
     )
     {
         return false;
     }
 
 
-    constexpr float WORLD_MARGIN =
-        30.0f;
-
-
-    std::uniform_real_distribution<float>
+    std::uniform_int_distribution<int>
         xDistribution(
-            WORLD_MARGIN,
-            maxX - WORLD_MARGIN
+            margin,
+            maxX
         );
 
 
-    std::uniform_real_distribution<float>
+    std::uniform_int_distribution<int>
         yDistribution(
-            WORLD_MARGIN,
-            maxY - WORLD_MARGIN
+            margin,
+            maxY
         );
 
 
-    constexpr int POSITION_ATTEMPTS =
+    std::uniform_int_distribution<int>
+        variantDistribution(
+            0,
+            STONE_VARIANT_COUNT - 1
+        );
+
+
+    const int maxAttempts =
         100;
 
 
     for (
         int attempt = 0;
-        attempt < POSITION_ATTEMPTS;
-        attempt++
+        attempt < maxAttempts;
+        ++attempt
     )
     {
         float x =
-            xDistribution(
-                randomEngine
+            static_cast<float>(
+                xDistribution(
+                    randomEngine
+                )
             );
 
 
         float y =
-            yDistribution(
-                randomEngine
+            static_cast<float>(
+                yDistribution(
+                    randomEngine
+                )
             );
 
 
-        Stone* candidate =
-            new Stone(
-                x,
-                y
-            );
-
-
-        SDL_FRect collider =
-            candidate->GetCollider();
-
-
-        SDL_FRect bounds =
-            candidate->GetBounds();
-
-
-        if (!IsOutsideCameraView(
-                bounds
-            ))
+        SDL_FRect stoneBounds =
         {
-            delete candidate;
+            x,
+            y,
+            stoneWidth,
+            stoneHeight
+        };
 
+
+        if (
+            !IsOutsideCameraView(
+                stoneBounds
+            )
+        )
+        {
             continue;
         }
 
 
-        if (!IsPositionValidForStone(
-                collider,
-                bounds
-            ))
+        int variant =
+            variantDistribution(
+                randomEngine
+            );
+
+
+        Stone* newStone =
+            new Stone(
+                x,
+                y,
+                variant
+            );
+
+
+        SDL_FRect stoneCollider =
+            newStone->GetCollider();
+
+
+        if (
+            !IsPositionValidForStone(
+                stoneCollider,
+                stoneBounds
+            )
+        )
         {
-            delete candidate;
+            delete newStone;
 
             continue;
         }
 
 
         stones.push_back(
-            candidate
+            newStone
         );
 
 
@@ -656,48 +1295,6 @@ bool GameScene::SpawnStoneOutsideView()
 
 
     return false;
-}
-
-
-bool GameScene::IsOutsideCameraView(
-    const SDL_FRect& bounds
-) const
-{
-    if (camera == nullptr)
-    {
-        return true;
-    }
-
-
-    SDL_FRect cameraView;
-
-
-    cameraView.x =
-        camera->GetX() -
-        STONE_SPAWN_MARGIN;
-
-
-    cameraView.y =
-        camera->GetY() -
-        STONE_SPAWN_MARGIN;
-
-
-    cameraView.w =
-        SCREEN_WIDTH +
-        STONE_SPAWN_MARGIN *
-        2.0f;
-
-
-    cameraView.h =
-        SCREEN_HEIGHT +
-        STONE_SPAWN_MARGIN *
-        2.0f;
-
-
-    return !Collision::CheckAABB(
-        bounds,
-        cameraView
-    );
 }
 
 
@@ -715,7 +1312,6 @@ bool GameScene::IsPositionValidForStone(
     }
 
 
-    // TileMap Decor와 겹침
     if (
         tileMap->IsBlocked(
             stoneCollider
@@ -726,11 +1322,14 @@ bool GameScene::IsPositionValidForStone(
     }
 
 
-    // Player와 겹침
+    SDL_FRect playerHitbox =
+        player->GetHitbox();
+
+
     if (
         Collision::CheckAABB(
-            stoneCollider,
-            player->GetHitbox()
+            playerHitbox,
+            stoneCollider
         )
     )
     {
@@ -738,8 +1337,31 @@ bool GameScene::IsPositionValidForStone(
     }
 
 
-    // 다른 돌과 겹침
-    for (Stone* stone : stones)
+    const float spacing =
+        10.0f;
+
+
+    SDL_FRect expandedBounds =
+        stoneBounds;
+
+
+    expandedBounds.x -=
+        spacing;
+
+
+    expandedBounds.y -=
+        spacing;
+
+
+    expandedBounds.w +=
+        spacing * 2.0f;
+
+
+    expandedBounds.h +=
+        spacing * 2.0f;
+
+
+    for (const Stone* stone : stones)
     {
         if (stone == nullptr)
         {
@@ -747,38 +1369,10 @@ bool GameScene::IsPositionValidForStone(
         }
 
 
-        SDL_FRect existingBounds =
-            stone->GetBounds();
-
-
-        SDL_FRect expandedExisting =
-            existingBounds;
-
-
-        constexpr float STONE_GAP =
-            10.0f;
-
-
-        expandedExisting.x -=
-            STONE_GAP;
-
-
-        expandedExisting.y -=
-            STONE_GAP;
-
-
-        expandedExisting.w +=
-            STONE_GAP * 2.0f;
-
-
-        expandedExisting.h +=
-            STONE_GAP * 2.0f;
-
-
         if (
             Collision::CheckAABB(
-                stoneBounds,
-                expandedExisting
+                expandedBounds,
+                stone->GetBounds()
             )
         )
         {
@@ -791,78 +1385,47 @@ bool GameScene::IsPositionValidForStone(
 }
 
 
-void GameScene::DestroyStone(
-    Stone* stone
-)
+bool GameScene::IsOutsideCameraView(
+    const SDL_FRect& bounds
+) const
 {
-    if (stone == nullptr)
+    if (camera == nullptr)
     {
-        return;
+        return true;
     }
 
 
-    // 선택 중인 돌을 파괴하는 경우
-    if (hoveredStone == stone)
+    const float spawnMargin =
+        80.0f;
+
+
+    SDL_FRect cameraView =
     {
-        hoveredStone = nullptr;
-    }
+        camera->GetX() -
+            spawnMargin,
+
+        camera->GetY() -
+            spawnMargin,
+
+        800.0f +
+            spawnMargin * 2.0f,
+
+        600.0f +
+            spawnMargin * 2.0f
+    };
 
 
-    auto it =
-        std::find(
-            stones.begin(),
-            stones.end(),
-            stone
-        );
-
-
-    if (it == stones.end())
-    {
-        return;
-    }
-
-
-    delete *it;
-
-
-    stones.erase(
-        it
+    return !Collision::CheckAABB(
+        bounds,
+        cameraView
     );
-
-
-    // =========================
-    // 새로운 돌 자동 생성
-    // =========================
-
-    int attempts = 0;
-
-
-    constexpr int MAX_RESPAWN_ATTEMPTS =
-        100;
-
-
-    while (
-        static_cast<int>(
-            stones.size()
-        ) < MAX_STONES &&
-        attempts <
-            MAX_RESPAWN_ATTEMPTS
-    )
-    {
-        if (SpawnStoneOutsideView())
-        {
-            break;
-        }
-
-
-        attempts++;
-    }
 }
 
 
 void GameScene::UpdateHoveredStone()
 {
-    hoveredStone = nullptr;
+    hoveredStone =
+        nullptr;
 
 
     if (camera == nullptr)
@@ -871,19 +1434,11 @@ void GameScene::UpdateHoveredStone()
     }
 
 
-    // =========================
-    // 현재 마우스 화면 좌표
-    // =========================
-
     SDL_GetMouseState(
         &mouseX,
         &mouseY
     );
 
-
-    // =========================
-    // 화면 좌표 → 월드 좌표
-    // =========================
 
     float worldMouseX =
         mouseX +
@@ -894,10 +1449,6 @@ void GameScene::UpdateHoveredStone()
         mouseY +
         camera->GetY();
 
-
-    // =========================
-    // 돌 검사
-    // =========================
 
     for (Stone* stone : stones)
     {
@@ -927,27 +1478,31 @@ void GameScene::Update(
     float deltaTime
 )
 {
-    if (objectManager == nullptr)
+    // =========================
+    // 시작화면
+    // =========================
+
+    if (!gameStarted)
     {
+        UpdateStartScreen(
+            deltaTime
+        );
+
         return;
     }
 
 
     // =========================
-    // Player
-    //
-    // 걷기 / 달리기 /
-    // 스태미나 / 애니메이션
+    // 실제 게임
     // =========================
 
-    objectManager->Update(
-        deltaTime
-    );
+    if (objectManager != nullptr)
+    {
+        objectManager->Update(
+            deltaTime
+        );
+    }
 
-
-    // =========================
-    // Movement
-    // =========================
 
     if (player != nullptr)
     {
@@ -965,27 +1520,13 @@ void GameScene::Update(
 
         MovePlayerWithCollisions(
             deltaX,
-            0.0f
-        );
-
-
-        MovePlayerWithCollisions(
-            0.0f,
             deltaY
         );
     }
 
 
-    // =========================
-    // Camera
-    // =========================
-
     UpdateCamera();
 
-
-    // =========================
-    // Mouse Hover
-    // =========================
 
     UpdateHoveredStone();
 }
@@ -1015,7 +1556,6 @@ void GameScene::RenderStaminaBar(
     }
 
 
-    // 최대일 때 완전히 숨김
     if (stamina >= maxStamina)
     {
         return;
@@ -1027,39 +1567,31 @@ void GameScene::RenderStaminaBar(
         maxStamina;
 
 
-    if (percent < 0.0f)
-    {
-        percent = 0.0f;
-    }
+    percent =
+        std::clamp(
+            percent,
+            0.0f,
+            1.0f
+        );
 
 
-    if (percent > 1.0f)
-    {
-        percent = 1.0f;
-    }
+    const float screenWidth =
+        800.0f;
 
 
-    constexpr float BAR_HEIGHT =
+    const float barHeight =
         12.0f;
+
+
+    const float barY =
+        600.0f -
+        barHeight;
 
 
     SDL_SetRenderDrawBlendMode(
         renderer,
         SDL_BLENDMODE_BLEND
     );
-
-
-    SDL_FRect backgroundRect =
-    {
-        0.0f,
-
-        SCREEN_HEIGHT -
-            BAR_HEIGHT,
-
-        SCREEN_WIDTH,
-
-        BAR_HEIGHT
-    };
 
 
     SDL_SetRenderDrawColor(
@@ -1071,33 +1603,37 @@ void GameScene::RenderStaminaBar(
     );
 
 
+    SDL_FRect backgroundRect =
+    {
+        0.0f,
+        barY,
+        screenWidth,
+        barHeight
+    };
+
+
     SDL_RenderFillRect(
         renderer,
         &backgroundRect
     );
 
 
-    SDL_FRect staminaRect =
-    {
-        0.0f,
-
-        SCREEN_HEIGHT -
-            BAR_HEIGHT,
-
-        SCREEN_WIDTH *
-            percent,
-
-        BAR_HEIGHT
-    };
-
-
     SDL_SetRenderDrawColor(
         renderer,
         255,
         220,
-        40,
+        0,
         255
     );
+
+
+    SDL_FRect staminaRect =
+    {
+        0.0f,
+        barY,
+        screenWidth * percent,
+        barHeight
+    };
 
 
     SDL_RenderFillRect(
@@ -1117,16 +1653,6 @@ void GameScene::RenderCursor(
     SDL_Renderer* renderer
 )
 {
-    // =========================
-    // 실제 업로드한 커서 크기
-    //
-    // Default = 23x22
-    // Pickaxe = 23x23
-    //
-    // 게임에서 조금 더 보기 좋게
-    // 32px 정도로 확대
-    // =========================
-
     SDL_FRect cursorRect;
 
 
@@ -1138,33 +1664,23 @@ void GameScene::RenderCursor(
         mouseY;
 
 
-    // 돌 위에 있으면
-    // Pickaxe Cursor
+    cursorRect.w =
+        20.0f;
+
+
+    cursorRect.h =
+        20.0f;
+
+
     if (hoveredStone != nullptr)
     {
-        cursorRect.w =
-            24.0f;
-
-        cursorRect.h =
-            24.0f;
-
-
         pickaxeCursorTexture.Render(
             renderer,
             cursorRect
         );
     }
-
-    // 일반 Cursor
     else
     {
-        cursorRect.w =
-            24.0f;
-
-        cursorRect.h =
-            24.0f;
-
-
         defaultCursorTexture.Render(
             renderer,
             cursorRect
@@ -1177,14 +1693,38 @@ void GameScene::Render(
     SDL_Renderer* renderer
 )
 {
+    if (renderer == nullptr)
+    {
+        return;
+    }
+
+
     // =========================
-    // 1. TileMap
+    // 시작화면
     // =========================
 
-    if (
-        tileMap != nullptr &&
-        camera != nullptr
-    )
+    if (!gameStarted)
+    {
+        RenderStartScreen(
+            renderer
+        );
+
+        return;
+    }
+
+
+    // =========================
+    // 실제 게임
+    // =========================
+
+    if (camera == nullptr)
+    {
+        return;
+    }
+
+
+    // TileMap
+    if (tileMap != nullptr)
     {
         tileMap->Render(
             renderer,
@@ -1193,53 +1733,52 @@ void GameScene::Render(
     }
 
 
-    // =========================
-    // 2. Stones
-    // =========================
-
-    if (camera != nullptr)
+    // Stones
+    for (Stone* stone : stones)
     {
-        for (Stone* stone : stones)
+        if (stone == nullptr)
         {
-            if (stone == nullptr)
-            {
-                continue;
-            }
+            continue;
+        }
 
 
-            // =========================
-            // 마우스가 올라간 돌이면
-            // 먼저 빨간 Glow 렌더링
-            // =========================
-
-            if (stone == hoveredStone)
-            {
-                stone->RenderHighlight(
-                    renderer,
-                    *camera,
-                    stoneTexture
-                );
-            }
+        int variant =
+            stone->GetVariant();
 
 
-            // 원본 돌
-            stone->Render(
+        if (
+            variant < 0 ||
+            variant >= STONE_VARIANT_COUNT
+        )
+        {
+            continue;
+        }
+
+
+        const Texture& stoneTexture =
+            stoneTextures[variant];
+
+
+        if (stone == hoveredStone)
+        {
+            stone->RenderHighlight(
                 renderer,
                 *camera,
                 stoneTexture
             );
         }
+
+
+        stone->Render(
+            renderer,
+            *camera,
+            stoneTexture
+        );
     }
 
 
-    // =========================
-    // 3. Player
-    // =========================
-
-    if (
-        objectManager != nullptr &&
-        camera != nullptr
-    )
+    // Player
+    if (objectManager != nullptr)
     {
         objectManager->Render(
             renderer,
@@ -1248,10 +1787,7 @@ void GameScene::Render(
     }
 
 
-    // =========================
-    // 4. Health
-    // =========================
-
+    // Health
     if (
         healthBar != nullptr &&
         player != nullptr
@@ -1265,23 +1801,79 @@ void GameScene::Render(
     }
 
 
-    // =========================
-    // 5. Stamina
-    // =========================
-
+    // Stamina
     RenderStaminaBar(
         renderer
     );
 
 
-    // =========================
-    // 6. Cursor
-    //
-    // 항상 가장 마지막에 렌더링해서
-    // 모든 게임 오브젝트보다 위에 표시
-    // =========================
-
+    // Cursor
     RenderCursor(
         renderer
     );
+}
+
+
+void GameScene::DestroyStone(
+    Stone* stone
+)
+{
+    if (stone == nullptr)
+    {
+        return;
+    }
+
+
+    if (hoveredStone == stone)
+    {
+        hoveredStone =
+            nullptr;
+    }
+
+
+    auto iterator =
+        std::find(
+            stones.begin(),
+            stones.end(),
+            stone
+        );
+
+
+    if (
+        iterator !=
+        stones.end()
+    )
+    {
+        delete *iterator;
+
+
+        stones.erase(
+            iterator
+        );
+    }
+
+
+    // =========================
+    // 돌 최대 15개 유지
+    // =========================
+
+    int attempts =
+        0;
+
+
+    const int maxAttempts =
+        500;
+
+
+    while (
+        static_cast<int>(
+            stones.size()
+        ) < MAX_STONES &&
+        attempts < maxAttempts
+    )
+    {
+        SpawnStoneOutsideView();
+
+        ++attempts;
+    }
 }

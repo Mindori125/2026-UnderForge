@@ -23,10 +23,11 @@ bool Texture::Load(
     Unload();
 
 
-    texture = IMG_LoadTexture(
-        renderer,
-        filePath.c_str()
-    );
+    texture =
+        IMG_LoadTexture(
+            renderer,
+            filePath.c_str()
+        );
 
 
     if (texture == nullptr)
@@ -39,6 +40,12 @@ bool Texture::Load(
 
         return false;
     }
+
+
+    SDL_SetTextureBlendMode(
+        texture,
+        SDL_BLENDMODE_BLEND
+    );
 
 
     return true;
@@ -103,6 +110,59 @@ void Texture::Render(
 
 void Texture::RenderTinted(
     SDL_Renderer* renderer,
+    const SDL_FRect& destination,
+    Uint8 red,
+    Uint8 green,
+    Uint8 blue,
+    Uint8 alpha
+) const
+{
+    if (texture == nullptr)
+    {
+        return;
+    }
+
+
+    SDL_SetTextureColorMod(
+        texture,
+        red,
+        green,
+        blue
+    );
+
+
+    SDL_SetTextureAlphaMod(
+        texture,
+        alpha
+    );
+
+
+    SDL_RenderTexture(
+        renderer,
+        texture,
+        nullptr,
+        &destination
+    );
+
+
+    // 원래 색상으로 복구
+    SDL_SetTextureColorMod(
+        texture,
+        255,
+        255,
+        255
+    );
+
+
+    SDL_SetTextureAlphaMod(
+        texture,
+        255
+    );
+}
+
+
+void Texture::RenderTinted(
+    SDL_Renderer* renderer,
     const SDL_FRect& source,
     const SDL_FRect& destination,
     Uint8 red,
@@ -117,7 +177,6 @@ void Texture::RenderTinted(
     }
 
 
-    // 원하는 색상 적용
     SDL_SetTextureColorMod(
         texture,
         red,
@@ -140,7 +199,6 @@ void Texture::RenderTinted(
     );
 
 
-    // 다음 렌더링에 영향을 주지 않도록
     // 원래 색상으로 복구
     SDL_SetTextureColorMod(
         texture,
@@ -165,7 +223,8 @@ void Texture::Unload()
             texture
         );
 
-        texture = nullptr;
+        texture =
+            nullptr;
     }
 }
 
